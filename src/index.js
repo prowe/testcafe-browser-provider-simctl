@@ -13,19 +13,21 @@ exports.default = {
         }
 
         if (device.state !== 'Booted') {
-            // no need to launch the emulator, it is already running
+            console.log(`Device is in ${device.state} status. Booting ${device.udid}`);
             const bootResult = shell.exec(`xcrun simctl boot "${device.udid}"`, { silent: true });
 
             if (bootResult.code !== 0) {
                 throw new Error(`Unable to boot devices. Exited: ${bootResult.code}: ${bootResult.stdout} ${bootResult.stderr}`);
             }
         }
+        console.log('Device Booted');
 
         const launchCommand = shell.exec(`xcrun simctl openurl "${device.udid}" "${pageUrl}"`, { silent: true });
 
         if (launchCommand.code !== 0) {
             throw new Error(`Unable to launch URL. Exited: ${launchCommand.code}: ${launchCommand.stdout} ${launchCommand.stderr}`);
         }
+        console.log('Browser launched')
     },
 
     async closeBrowser (id) {
@@ -77,7 +79,10 @@ exports.default = {
     },
 
     async isValidBrowserName (name) {
-        return this.getBrowserList ().find(name);
+        // const browsers = await this.getBrowserList();
+        // return browsers.find(name);
+        // TODO: Fix me
+        return true;
     },
 
     // Extra methods
