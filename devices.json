@@ -1431,7 +1431,7 @@
       },
       {
         "availability" : "(available)",
-        "state" : "Booted",
+        "state" : "Shutdown",
         "isAvailable" : true,
         "name" : "iPhone 8",
         "udid" : "AED3CD5E-FD99-4957-8C7C-5F7E8FF02FFC",

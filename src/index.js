@@ -1,26 +1,19 @@
 const shell = require('shelljs');
-const util = require('util');
 
 exports.default = {
-    // Multiple browsers support
     isMultiBrowser: true,
-
     devicesById: {},
 
-    // Required - must be implemented
-    // Browser control
     async openBrowser (id, pageUrl, browserName) {
         const device = this.devicesById[id] = this.getFlatDevices()
             .find((d) => d.providerString === browserName);
 
-        if (!device)
+        if (!device) {
             throw new Error('Device not found: ' + browserName);
-
-        console.log('launching device', device);
+        }
 
         if (device.state !== 'Booted') {
             // no need to launch the emulator, it is already running
-            console.log('Booting device ', device.udid);
             const bootResult = shell.exec(`xcrun simctl boot "${device.udid}"`, { silent: true });
 
             if (bootResult.code !== 0) {
@@ -43,8 +36,6 @@ exports.default = {
         shell.exec(`xcrun simctl shutdown "${device.udid}"`, { silent: true });
     },
 
-    // Optional - implement methods you need, remove other methods
-    // Initialization
     async init () {
         return;
     },
@@ -54,10 +45,11 @@ exports.default = {
     },
 
     getFlatDevices() {
-        const listResult = shell.exec(util.format('xcrun simctl list -j'), { silent: true });
+        const listResult = shell.exec('xcrun simctl list -j', { silent: true });
 
-        if (listResult.code !== 0)
+        if (listResult.code !== 0) {
             throw new Error(`Unable to list devices. Exited: ${listResult.code}: ${listResult.stdout}`);
+        }
 
         const parsedResults = JSON.parse(listResult.stdout);
 
@@ -79,16 +71,14 @@ exports.default = {
             .reduce((arr, item) => [...arr, ...item], []);
     },
 
-    // Browser names handling
     async getBrowserList () {
         return this.getFlatDevices()
             .map((device) => device.providerString);
     },
 
-    async isValidBrowserName (/* browserName */) {
-        return true;
+    async isValidBrowserName (name) {
+        return this.getBrowserList ().find(name);
     },
-
 
     // Extra methods
     async resizeWindow (/* id, width, height, currentWidth, currentHeight */) {
